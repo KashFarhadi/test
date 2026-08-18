@@ -1,0 +1,58 @@
+{
+  "description": "Ten public-video live validation cases covering fresh uploads, manual/automatic captions, and forced audio ASR.",
+  "videos": [
+    {
+      "label": "Exact user video, forced hard fallback",
+      "url": "https://youtu.be/ILtQtKuH84Q",
+      "language": "en",
+      "force_asr": true,
+      "asr_model": "tiny.en"
+    },
+    {
+      "label": "Prior empty-caption case",
+      "url": "https://www.youtube.com/watch?v=r9a7oFEKMvQ",
+      "language": "en"
+    },
+    {
+      "label": "Recent technology review",
+      "url": "https://www.youtube.com/watch?v=oaaOwLnuyPU",
+      "language": "en"
+    },
+    {
+      "label": "youtube-transcript-api reference fixture",
+      "url": "https://www.youtube.com/watch?v=GJLlxj_dtq8",
+      "language": "en"
+    },
+    {
+      "label": "youtube-transcript-api fallback-language fixture",
+      "url": "https://www.youtube.com/watch?v=F1xioXWb8CY",
+      "language": "en"
+    },
+    {
+      "label": "Very short historic upload",
+      "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+      "language": "en",
+      "minimum_characters": 5
+    },
+    {
+      "label": "YouTube developer sample",
+      "url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+      "language": "en"
+    },
+    {
+      "label": "Long-form educational narration",
+      "url": "https://www.youtube.com/watch?v=aircAruvnKk",
+      "language": "en"
+    },
+    {
+      "label": "Music video with published captions",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "language": "en"
+    },
+    {
+      "label": "Second music-caption case",
+      "url": "https://www.youtube.com/watch?v=L_jWHffIx5E",
+      "language": "en"
+    }
+  ]
+}
