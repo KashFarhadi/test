@@ -30,6 +30,9 @@ jobs:
       - name: Probe ten videos through SumMyNews
         run: python probe_summynews.py
 
+      - name: Fetch target ten consecutive times
+        run: python repeat_target_probe.py
+
       - name: Upload provider evidence
         if: always()
         uses: actions/upload-artifact@v4
