@@ -1,4 +1,4 @@
-name: Probe independent YouTube caption provider
+name: Validate production YouTube transcript pipeline
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  probe:
+  validate:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
 
@@ -27,17 +27,26 @@ jobs:
           PYTHONPATH: .
         run: python -m unittest discover -s tests -v
 
-      - name: Probe ten videos through SumMyNews
-        run: python probe_summynews.py
+      - name: Run production extractor across ten videos
+        run: |
+          python reliable_transcript.py \
+            --matrix test_matrix.json \
+            --output-dir artifacts \
+            --attempts-per-route 3 \
+            --strict
 
-      - name: Fetch target ten consecutive times
-        run: python repeat_target_probe.py
+      - name: Fetch exact target ten consecutive times
+        run: |
+          mkdir -p provider-artifacts
+          python repeat_target_probe.py
 
-      - name: Upload provider evidence
+      - name: Upload production transcript evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: caption-provider-evidence
-          path: provider-artifacts/
+          name: transcript-validation-evidence
+          path: |
+            artifacts/
+            provider-artifacts/
           if-no-files-found: warn
           retention-days: 7
