@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/extract-QBfXiWvM0qc
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
