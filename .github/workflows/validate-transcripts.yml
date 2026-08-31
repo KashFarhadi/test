@@ -1,8 +1,6 @@
-name: Validate YouTube transcript pipeline
+name: Validate production YouTube transcript pipeline
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
   workflow_dispatch:
@@ -13,7 +11,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 240
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
@@ -23,49 +21,32 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
-
-      - name: Set up Node for yt-dlp EJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Install ffmpeg and Python dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          python -m yt_dlp --version
-          node --version
-          ffmpeg -version | head -n 1
 
       - name: Run deterministic unit tests
         env:
           PYTHONPATH: .
         run: python -m unittest discover -s tests -v
 
-      - name: Run ten-video live validation
+      - name: Run production extractor across ten videos
         run: |
-          python extract_transcript.py \
+          python reliable_transcript.py \
             --matrix test_matrix.json \
             --output-dir artifacts \
-            --attempts-per-route 2 \
-            --asr-model tiny.en \
+            --attempts-per-route 3 \
             --strict
 
-      - name: Publish validation summary
-        if: always()
+      - name: Fetch exact target ten consecutive times
         run: |
-          if [ -f artifacts/validation-summary.md ]; then
-            cat artifacts/validation-summary.md >> "$GITHUB_STEP_SUMMARY"
-          fi
+          mkdir -p provider-artifacts
+          python repeat_target_probe.py
 
-      - name: Upload transcript evidence
+      - name: Upload production transcript evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: transcript-validation-evidence
-          path: artifacts/
+          path: |
+            artifacts/
+            provider-artifacts/
           if-no-files-found: warn
           retention-days: 7
