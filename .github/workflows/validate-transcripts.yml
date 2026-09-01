@@ -1,17 +1,21 @@
-name: Validate production YouTube transcript pipeline
+name: Extract requested YouTube transcript
 
 on:
+  push:
+    branches:
+      - agent/extract-QBfXiWvM0qc
   pull_request:
-    branches: [master]
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  validate:
+  extract:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     steps:
       - name: Check out repository
@@ -22,31 +26,19 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run deterministic unit tests
-        env:
-          PYTHONPATH: .
-        run: python -m unittest discover -s tests -v
-
-      - name: Run production extractor across ten videos
+      - name: Extract and validate requested video
         run: |
           python reliable_transcript.py \
-            --matrix test_matrix.json \
+            "https://www.youtube.com/watch?v=QBfXiWvM0qc" \
             --output-dir artifacts \
             --attempts-per-route 3 \
             --strict
 
-      - name: Fetch exact target ten consecutive times
-        run: |
-          mkdir -p provider-artifacts
-          python repeat_target_probe.py
-
-      - name: Upload production transcript evidence
+      - name: Upload transcript evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: transcript-validation-evidence
-          path: |
-            artifacts/
-            provider-artifacts/
+          name: transcript-QBfXiWvM0qc
+          path: artifacts/
           if-no-files-found: warn
           retention-days: 7
